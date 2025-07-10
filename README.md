@@ -1,6 +1,6 @@
 # Threadzilla
 
-![Threadzilla Logo](resources/logo.png)
+<img src="resources/logo.png" width="300" height="300" alt="Threadzilla Logo" />
 
 > Threadzilla is a Slack bot that generates threads based on the prompt provided by the user.
 
