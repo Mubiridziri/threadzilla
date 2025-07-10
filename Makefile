@@ -12,7 +12,7 @@ dev: ## Go Run
 	env $(shell cat .env) go run cmd/threadzilla/main.go
 
 .PHONY: test
-test: mocks
+test:
 	go test ./...
 
 .PHONY: lint
