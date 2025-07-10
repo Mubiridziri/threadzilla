@@ -1,0 +1,92 @@
+name: Go
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  # Required: allow read access to the content for analysis.
+  contents: read
+  # Optional: allow read access to pull request. Use with `only-new-issues` option.
+  pull-requests: read
+  # Optional: allow write access to checks to allow the action to annotate code in the PR.
+  checks: write
+
+jobs:
+  pull_request:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        go-version: [1.24]
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Install Dependencies
+        run: |
+            go mod download
+            echo "$HOME/go/bin" >> $GITHUB_PATH
+
+      - name: Run Tests
+        run: |
+          make test
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.64
+
+      - name: Build binary
+        run: |
+          go build -v ./cmd/threadzilla
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: pull_request
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Install Dependencies
+        run: |
+          go mod download
+          echo "$HOME/go/bin" >> $GITHUB_PATH
+
+      - name: Build Binary
+        run: |
+          go build -v ./cmd/threadzilla
+
+      # - name: Setup SSH
+      #   run: |
+      #     mkdir -p ~/.ssh
+      #     echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+      #     chmod 600 ~/.ssh/id_rsa
+      #     ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+      # - name: Deploy to VPS
+      #   run: |
+      #     scp threadzilla ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USER }}/threadzilla
+      #     ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
+      #     sudo systemctl stop threadzilla || true
+      #     sudo mv /home/${{ secrets.VPS_USER }}/threadzilla /usr/local/bin/threadzilla
+      #     sudo chmod +x /usr/local/bin/threadzilla
+      #     sudo systemctl start threadzilla
+      #     "
