@@ -16,6 +16,14 @@
 $ go mod download
 ```
 
+### Make your .env file
+```
+SENDING_HOUR_AT=09:00
+SLACK_TOKEN=token
+SLACK_CHANNEL=CHANNEL_ID
+OPENAI_TOKEN=token
+```
+
 ### Run project
 
 ```bash

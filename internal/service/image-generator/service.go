@@ -14,7 +14,7 @@ type ImageGenerator struct {
 	client Client
 }
 
-func NewImageGenerator(client *openai.Client) *ImageGenerator {
+func NewImageGenerator(client openai.Client) *ImageGenerator {
 	return &ImageGenerator{
 		client: client,
 	}

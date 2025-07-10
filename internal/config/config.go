@@ -5,6 +5,7 @@ import "threadzilla/internal/utils"
 
 const OpenAIToken = "OPENAI_TOKEN"
 const SlackToken = "SLACK_TOKEN"
+const SlackChannel = "SLACK_CHANNEL"
 const SendingHourAt = "SENDING_HOUR_AT"
 
 type Loader struct {
@@ -26,7 +27,8 @@ type OpenAI struct {
 }
 
 type Slack struct {
-	Token string
+	Token   string
+	Channel string
 }
 
 func (loader *Loader) createConfig() *Config {
@@ -36,7 +38,8 @@ func (loader *Loader) createConfig() *Config {
 			Token: utils.GetEnvStr(OpenAIToken, ""),
 		},
 		Slack{
-			Token: utils.GetEnvStr(SlackToken, ""),
+			Token:   utils.GetEnvStr(SlackToken, ""),
+			Channel: utils.GetEnvStr(SlackChannel, ""),
 		},
 	}
 }
@@ -66,6 +69,10 @@ func (loader *Loader) validate(cfg *Config) error {
 	}
 
 	if cfg.Slack.Token == "" {
+		return loader.createNotNullEnvError(SlackToken)
+	}
+
+	if cfg.Slack.Channel == "" {
 		return loader.createNotNullEnvError(SlackToken)
 	}
 
