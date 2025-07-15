@@ -49,6 +49,7 @@ func (m *mockChannel) SendMessageWithImage(filepath, title, description string, 
 	m.sentDescription = description
 	return m.msgErr
 }
+
 func (m *mockChannel) SendMessage(text string, ctx context.Context) error {
 	m.sentWithImage = false
 	m.sentText = text
