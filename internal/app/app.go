@@ -30,12 +30,14 @@ func (a *Application) Run(ctx context.Context) error {
 	threadCreator := thread_creator.NewThreadCreator(imageGenerator, textGenerator, slackClient)
 
 	runDailyJob(ctx, cfg.SendingHourAt, cfg.SendingMinuteAt, func(ctx context.Context) {
+		fmt.Println("Creating deploy thread...")
 		err = threadCreator.CreateDeployThread(ctx)
 
 		if err != nil {
 			fmt.Println("Error creating deploy thread:", err)
 		}
 
+		fmt.Println("Creating review thread...")
 		err = threadCreator.CreateReviewThread(ctx)
 
 		if err != nil {

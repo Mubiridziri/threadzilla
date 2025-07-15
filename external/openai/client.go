@@ -27,7 +27,9 @@ func (c Client) GenerateImage(prompt string, ctx context.Context) ([]string, err
 		Input: responses.ResponseNewParamsInputUnion{OfString: param.Opt[string]{Value: prompt}},
 		Model: openai.ChatModelGPT4_1,
 		Tools: []responses.ToolUnionParam{
-			{OfImageGeneration: &responses.ToolImageGenerationParam{}},
+			{OfImageGeneration: &responses.ToolImageGenerationParam{
+				Size: "1536x1024",
+			}},
 		},
 	})
 
