@@ -3,6 +3,7 @@ package thread_creator
 import (
 	"context"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"path"
 	filemanager "threadzilla/internal/service/file-manager"
@@ -34,14 +35,16 @@ type ThreadCreator struct {
 	textGenerator  TextGenerator
 	channel        Channel
 	fileManager    FileManager
+	withImage      bool
 }
 
-func NewThreadCreator(imageGenerator ImageGenerator, textGenerator TextGenerator, channel Channel) *ThreadCreator {
+func NewThreadCreator(imageGenerator ImageGenerator, textGenerator TextGenerator, channel Channel, withImage bool) *ThreadCreator {
 	return &ThreadCreator{
 		imageGenerator: imageGenerator,
 		textGenerator:  textGenerator,
 		channel:        channel,
 		fileManager:    filemanager.FileManager{},
+		withImage:      withImage,
 	}
 }
 
@@ -52,9 +55,15 @@ func (tc *ThreadCreator) CreateDeployThread(ctx context.Context) error {
 	description := fmt.Sprintf("Интересный факт на сегодня: \n "+
 		"%s", fact)
 
+	if !tc.withImage {
+		return tc.channel.SendMessage(title+"\n\n"+description, ctx)
+	}
+
 	filepath, err := tc.getImage(DeployThread, ctx)
 
 	if err != nil {
+		log.Errorf("error when generating image: %v", err)
+
 		reason := tc.textGenerator.GenerateNoImageReasonText(ctx)
 
 		description += "\n\n" + reason
@@ -71,9 +80,15 @@ func (tc *ThreadCreator) CreateReviewThread(ctx context.Context) error {
 	description := fmt.Sprintf("Интересный факт на сегодня: \n "+
 		"%s", fact)
 
+	if !tc.withImage {
+		return tc.channel.SendMessage(title+"\n\n"+description, ctx)
+	}
+
 	filepath, err := tc.getImage(ReviewThread, ctx)
 
 	if err != nil {
+		log.Errorf("error when generating image: %v", err)
+
 		reason := tc.textGenerator.GenerateNoImageReasonText(ctx)
 
 		description += "\n\n" + reason

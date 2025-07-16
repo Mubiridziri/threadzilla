@@ -68,8 +68,8 @@ func (m *mockFileManager) DeleteFile(filepath string) error {
 }
 
 // --- Inject mock file manager ---
-func newThreadCreatorWithMocks(img *mockImageGenerator, txt *mockTextGenerator, ch *mockChannel, fm *mockFileManager) *ThreadCreator {
-	tc := NewThreadCreator(img, txt, ch)
+func newThreadCreatorWithMocks(img *mockImageGenerator, txt *mockTextGenerator, ch *mockChannel, fm *mockFileManager, withImage bool) *ThreadCreator {
+	tc := NewThreadCreator(img, txt, ch, withImage)
 	tc.fileManager = fm
 	return tc
 }
@@ -118,7 +118,7 @@ func TestThreadCreator_CreateDeployThread(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tc := newThreadCreatorWithMocks(tt.imgGen, tt.txtGen, tt.channel, tt.fileManager)
+			tc := newThreadCreatorWithMocks(tt.imgGen, tt.txtGen, tt.channel, tt.fileManager, true)
 			err := tc.CreateDeployThread(ctx)
 			if (err != nil) != tt.expectErr {
 				t.Errorf("expected error: %v, got: %v", tt.expectErr, err)
@@ -133,6 +133,24 @@ func TestThreadCreator_CreateDeployThread(t *testing.T) {
 	}
 }
 
+func TestThreadCreator_CreateDeployThread_NoImage(t *testing.T) {
+	ctx := context.Background()
+	imgGen := &mockImageGenerator{}
+	textGen := &mockTextGenerator{}
+	channel := &mockChannel{sentText: "text"}
+	fileManager := &mockFileManager{}
+
+	tc := newThreadCreatorWithMocks(imgGen, textGen, channel, fileManager, false)
+	err := tc.CreateDeployThread(ctx)
+	if err != nil {
+		t.Fatalf("expected no error, got: %v", err)
+	}
+
+	if channel.sentWithImage {
+		t.Errorf("expected SendMessage to be called, but SendMessageWithImage was called")
+	}
+}
+
 func TestThreadCreator_CreateReviewThread(t *testing.T) {
 	ctx := context.Background()
 
@@ -141,9 +159,29 @@ func TestThreadCreator_CreateReviewThread(t *testing.T) {
 		&mockTextGenerator{interestingFact: "fact"},
 		&mockChannel{},
 		&mockFileManager{},
+		true,
 	)
 	err := tc.CreateReviewThread(ctx)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
+}
+
+func TestThreadCreator_CreateReviewThread_NoImage(t *testing.T) {
+	ctx := context.Background()
+	imgGen := &mockImageGenerator{}
+	textGen := &mockTextGenerator{}
+	channel := &mockChannel{}
+	fileManager := &mockFileManager{}
+
+	tc := newThreadCreatorWithMocks(imgGen, textGen, channel, fileManager, false)
+	err := tc.CreateReviewThread(ctx)
+	if err != nil {
+		t.Fatalf("expected no error, got: %v", err)
+	}
+
+	if channel.sentWithImage {
+		t.Errorf("expected SendMessage to be called, but SendMessageWithImage was called")
+	}
+
 }

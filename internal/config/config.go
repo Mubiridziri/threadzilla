@@ -7,6 +7,8 @@ const OpenAIToken = "OPENAI_TOKEN"
 const SlackToken = "SLACK_TOKEN"
 const SlackChannel = "SLACK_CHANNEL"
 const SendingHourAt = "SENDING_HOUR_AT"
+const DaemonMode = "DAEMON_MODE"
+const WithImage = "OPENAI_GENERATING_WITH_IMAGE"
 
 type Loader struct {
 }
@@ -20,10 +22,12 @@ type Config struct {
 type Common struct {
 	SendingHourAt   int
 	SendingMinuteAt int
+	DaemonMode      bool
 }
 
 type OpenAI struct {
-	Token string
+	Token     string
+	WithImage bool
 }
 
 type Slack struct {
@@ -33,9 +37,12 @@ type Slack struct {
 
 func (loader *Loader) createConfig() *Config {
 	return &Config{
-		Common{},
+		Common{
+			DaemonMode: utils.GetEnvBool(DaemonMode, false),
+		},
 		OpenAI{
-			Token: utils.GetEnvStr(OpenAIToken, ""),
+			Token:     utils.GetEnvStr(OpenAIToken, ""),
+			WithImage: utils.GetEnvBool(WithImage, true),
 		},
 		Slack{
 			Token:   utils.GetEnvStr(SlackToken, ""),

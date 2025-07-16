@@ -27,6 +27,14 @@ go.work.sum
 # env file
 .env
 
+# log file
+app.log
+
+# generated files
+
+deploy_thread.png
+review_thread.png
+
 # Editor/IDE
 # .idea/
 # .vscode/

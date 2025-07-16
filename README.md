@@ -18,10 +18,12 @@ $ go mod download
 
 ### Make your .env file
 ```
+DAEMON_MODE=true
 SENDING_HOUR_AT=09:00
 SLACK_TOKEN=token
 SLACK_CHANNEL=CHANNEL_ID
 OPENAI_TOKEN=token
+OPENAI_GENERATING_WITH_IMAGE=true
 ```
 
 ### Run project
