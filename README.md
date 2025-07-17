@@ -17,6 +17,19 @@ $ go mod download
 ```
 
 ### Make your .env file
+
+### Environment variables
+
+| Variable                     | Default | Description                                                                                                                                                                                                               |
+|------------------------------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DAEMON_MODE                  | false   | Should the bot be run in daemon mode? If true, the bot will run in a loop checking if it's time to send a message. If false, the bot will create a thread and exit. You can use this mode to run the bot with a cron job. |
+| SENDING_HOUR_AT              | 10:09   | Time when the bot should send the message in 'HH:MM' format                                                                                                                                                               |
+| SLACK_TOKEN                  |         | Slack token from your bot                                                                                                                                                                                                 |
+| SLACK_CHANNEL                |         | Slack channel where the bot should send the message                                                                                                                                                                       |
+| OPENAI_TOKEN                 |         | OpenAI token from your account                                                                                                                                                                                            |
+| OPENAI_GENERATING_WITH_IMAGE | true    | Should the bot generate a message with an image?                                                                                                                                                                          |
+
+For example:
 ```
 DAEMON_MODE=true
 SENDING_HOUR_AT=09:00
